@@ -15,6 +15,8 @@ import InRoom from "./pages/InRoom.js";
 import CreateRoomLobby from "./pages/CreateRoomLobby.js";
 import CreateRoom from "./pages/CreateRoom.js";
 import { ThemeProvider } from "next-themes";
+import ActiveSessions from "./pages/ActiveSessions.js";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -41,6 +43,7 @@ const App = () => (
               <Route path="/join-room" element={<JoinRoom />} />       {/* ✅ */}
               <Route path="/room/:roomName" element={<InRoom />} />
               <Route path="/lobby/:roomId" element={<CreateRoomLobby />} />
+              <Route path="/sessions" element={<ActiveSessions />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

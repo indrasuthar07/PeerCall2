@@ -1,5 +1,6 @@
 import React, { Component, ReactNode } from "react";
-import { AlertTriangle } from "lucide-react"; 
+import { AlertTriangle } from "lucide-react";
+import logger from "../lib/logger.js";
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -17,8 +18,13 @@ class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
   }
-    static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    logger.error("ErrorBoundary caught an error", error, {
+      componentStack: errorInfo.componentStack,
+    });
   }
  handleReload = () => {
     window.location.reload();
