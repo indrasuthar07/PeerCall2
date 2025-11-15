@@ -20,10 +20,15 @@ winston.addColors(colors);
 //log format
 const format = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
-  winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`
-  )
+  winston.format.errors({ stack: true }),
+  winston.format.splat(),
+  winston.format.json(),
+  winston.format.printf((info) => {
+    if (info.stack) {
+      return `${info.timestamp} ${info.level}: ${info.message}\n${info.stack}`;
+    }
+    return `${info.timestamp} ${info.level}: ${info.message}`;
+  })
 );
 
 const transports = [
@@ -32,7 +37,7 @@ const transports = [
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.printf(
-        (info) => `${info.timestamp} ${info.level}: ${info.message}`
+        (info) => `${info.timestamp} ${info.level}: ${info.message}${info.stack ? '\n' + info.stack : ''}`
       )
     ),
   }),
@@ -41,15 +46,31 @@ const transports = [
     level: "error",
     format: winston.format.combine(
       winston.format.timestamp(),
+      winston.format.errors({ stack: true }),
       winston.format.json()
     ),
+    maxsize: 5242880,
+    maxFiles: 5,
   }),
   new winston.transports.File({
     filename: path.join(logsDir, "combined.log"),
     format: winston.format.combine(
       winston.format.timestamp(),
+      winston.format.errors({ stack: true }),
       winston.format.json()
     ),
+    maxsize: 5242880,
+    maxFiles: 5,
+  }),
+  new winston.transports.File({
+    filename: path.join(logsDir, "requests.log"),
+    level: "http",
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.json()
+    ),
+    maxsize: 5242880,
+    maxFiles: 5,
   }),
 ];
 
